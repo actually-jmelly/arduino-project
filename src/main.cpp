@@ -15,8 +15,11 @@ int latchPin = 8;
 int clockPin = 12;
 ////Pin connected to DS of 74HC595
 int dataPin = 11;
+int digitPins[4] = {2, 3, 4, 5};
+
 int numbers[10] = {192, 249, 164, 176, 153, 146, 130, 248, 128, 144}; // This one is different from my previous numbers m-arrays. It's not in bits but in a 0-255 code.
 int numbersDecimal[10] = {64, 121, 36, 48, 25, 18, 2, 120, 0, 16};
+int numToDisplay = 1998;
 
 void setup() {
   //set pins to output so you can control the shift register
@@ -27,13 +30,22 @@ void setup() {
     pinMode(i, OUTPUT);
   }
 }
+
+void flashDigit(int digitToFlash){
+  // int digitToFlash is not the actual pin number, but the named number of the digit from 1 to 4.
+  for(int i = 0; i < 4; i++){
+    if(i+1 == digitToFlash){
+      digitalWrite(digitPins[i], HIGH);
+    } else {
+      digitalWrite(digitPins[i], LOW);
+    }
+  }
+}
+
 void loop() {
     // take the latchPin low so
     // the LEDs don't change while you're sending in bits:
-    digitalWrite(2, HIGH);
-    digitalWrite(3, HIGH);
-    digitalWrite(4, HIGH);
-    digitalWrite(5, HIGH);
+    flashDigit(4);
     digitalWrite(latchPin, LOW);
     // shift out the bits:
     shiftOut(dataPin, clockPin, MSBFIRST, numbersDecimal[9]);
