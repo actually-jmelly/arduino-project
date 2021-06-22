@@ -42,17 +42,21 @@ void flashDigit(int digitToFlash){
   }
 }
 
-void loop() {
-    // take the latchPin low so
-    // the LEDs don't change while you're sending in bits:
-    flashDigit(4);
+void sendRenderToShiftRegister(int numData){
     digitalWrite(latchPin, LOW);
     // shift out the bits:
-    shiftOut(dataPin, clockPin, MSBFIRST, numbersDecimal[9]);
+    shiftOut(dataPin, clockPin, MSBFIRST, numbersDecimal[numData]);
     //take the latch pin high so the LEDs will light up:
     digitalWrite(latchPin, HIGH);
     // pause before next value:
     delay(500);
+}
+
+void loop() {
+    // take the latchPin low so
+    // the LEDs don't change while you're sending in bits:
+    flashDigit(4);
+    sendRenderToShiftRegister(9);
 }
 
 /*
