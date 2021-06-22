@@ -22,17 +22,13 @@ void setup() {
   pinMode(dataPin, OUTPUT);
 }
 void loop() {
-  // count from 0 to 255 and display the number
-  // on the LEDs
-  for (int numberToDisplay = 0; numberToDisplay < 256; numberToDisplay++) {
     // take the latchPin low so
     // the LEDs don't change while you're sending in bits:
     digitalWrite(latchPin, LOW);
     // shift out the bits:
-    shiftOut(dataPin, clockPin, MSBFIRST, numberToDisplay);
+    shiftOut(dataPin, clockPin, MSBFIRST, 0);
     //take the latch pin high so the LEDs will light up:
     digitalWrite(latchPin, HIGH);
     // pause before next value:
     delay(500);
-  }
 }
