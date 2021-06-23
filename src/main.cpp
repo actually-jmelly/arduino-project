@@ -38,20 +38,40 @@ void flashDigit(int digitToFlash){
 }
 
 void sendRenderToShiftRegister(int numData){
+    // I honestly don't know if we need the first and last shiftOut cycles
+    // Also I feel like we're missing a digitalWrite in the last cycle but whatever it works
     digitalWrite(latchPin, LOW);
     shiftOut(dataPin, clockPin, MSBFIRST, 255);
     digitalWrite(latchPin, HIGH);
+
+    digitalWrite(latchPin, LOW);
+    shiftOut(dataPin, clockPin, MSBFIRST, numbers[numData]);
+    digitalWrite(latchPin, HIGH);
+
+    shiftOut(dataPin, clockPin, MSBFIRST, 255);
+    digitalWrite(latchPin, LOW);
+}
+
+void sendDecimalRenderToShiftRegister(int numData){
+  // TODO fix the abomination that is this function's name
+
+  // I honestly don't know if we need the first and last shiftOut cycles
+    // Also I feel like we're missing a digitalWrite in the last cycle but whatever it works
+    digitalWrite(latchPin, LOW);
+    shiftOut(dataPin, clockPin, MSBFIRST, 255);
+    digitalWrite(latchPin, HIGH);
+
     digitalWrite(latchPin, LOW);
     shiftOut(dataPin, clockPin, MSBFIRST, numbersDecimal[numData]);
-    
     digitalWrite(latchPin, HIGH);
+
     shiftOut(dataPin, clockPin, MSBFIRST, 255);
     digitalWrite(latchPin, LOW);
 }
 
 void displayInt(int integer){
   if (integer > 9999 or integer < 0){
-    // Error code
+    // TODO Error code
   } else {
     int thousands = integer / 1000;
     int thousandsRemain = integer % 1000;
@@ -64,7 +84,7 @@ void displayInt(int integer){
     flashDigit(2);
     sendRenderToShiftRegister(hundreds);
     flashDigit(3);
-    sendRenderToShiftRegister(tens);
+    sendDecimalRenderToShiftRegister(tens);
     flashDigit(4);
     sendRenderToShiftRegister(ones);
   }
