@@ -1,28 +1,16 @@
 #include <Arduino.h>
 
-//**************************************************************//
-//  Name    : shiftOutCode, Hello World
-//  Author  : Carlyn Maw,Tom Igoe, David A. Mellis
-//  Date    : 25 Oct, 2006
-//  Modified: 23 Mar 2010
-//  Version : 2.0
-//  Notes   : Code for using a 74HC595 Shift Register           //
-//          : to count from 0 to 255
-//****************************************************************
-//Pin connected to ST_CP of 74HC595
 int latchPin = 8;
-//Pin connected to SH_CP of 74HC595
 int clockPin = 12;
-////Pin connected to DS of 74HC595
 int dataPin = 11;
 int digitPins[4] = {2, 3, 4, 5};
 
 int numbers[10] = {192, 249, 164, 176, 153, 146, 130, 248, 128, 144}; // This one is different from my previous numbers m-arrays. It's not in bits but in a 0-255 code.
 int numbersDecimal[10] = {64, 121, 36, 48, 25, 18, 2, 120, 0, 16};
-int numToDisplay = 1998;
+int numToDisplay = 1234;
 
 void setup() {
-  //set pins to output so you can control the shift register
+  // Initialize our pins
   pinMode(latchPin, OUTPUT);
   pinMode(clockPin, OUTPUT);
   pinMode(dataPin, OUTPUT);
@@ -33,8 +21,15 @@ void setup() {
 
 void flashDigit(int digitToFlash){
   // int digitToFlash is not the actual pin number, but the named number of the digit from 1 to 4.
+
+  // First, clear the frame (I often call frames digits) that we want to flash.
+  digitalWrite(digitPins[digitToFlash - 1], LOW);
+  digitalWrite(latchPin, HIGH);
+  digitalWrite(latchPin, LOW);
+
+  // Set the frame we want to flash to HIGH, and the other frames to LOW
   for(int i = 0; i < 4; i++){
-    if(i+1 == digitToFlash){
+    if(i == digitToFlash - 1){
       digitalWrite(digitPins[i], HIGH);
     } else {
       digitalWrite(digitPins[i], LOW);
@@ -44,19 +39,39 @@ void flashDigit(int digitToFlash){
 
 void sendRenderToShiftRegister(int numData){
     digitalWrite(latchPin, LOW);
-    // shift out the bits:
-    shiftOut(dataPin, clockPin, MSBFIRST, numbersDecimal[numData]);
-    //take the latch pin high so the LEDs will light up:
+    shiftOut(dataPin, clockPin, MSBFIRST, 255);
     digitalWrite(latchPin, HIGH);
-    // pause before next value:
-    delay(500);
+    digitalWrite(latchPin, LOW);
+    shiftOut(dataPin, clockPin, MSBFIRST, numbersDecimal[numData]);
+    
+    digitalWrite(latchPin, HIGH);
+    shiftOut(dataPin, clockPin, MSBFIRST, 255);
+    digitalWrite(latchPin, LOW);
+}
+
+void displayInt(int integer){
+  if (integer > 9999 or integer < 0){
+    // Error code
+  } else {
+    int thousands = integer / 1000;
+    int thousandsRemain = integer % 1000;
+    int hundreds = thousandsRemain / 100;
+    int hundredsRemain = thousandsRemain % 100;
+    int tens = hundredsRemain / 10;
+    int ones = hundredsRemain % 10;
+    flashDigit(1);
+    sendRenderToShiftRegister(thousands);
+    flashDigit(2);
+    sendRenderToShiftRegister(hundreds);
+    flashDigit(3);
+    sendRenderToShiftRegister(tens);
+    flashDigit(4);
+    sendRenderToShiftRegister(ones);
+  }
 }
 
 void loop() {
-    // take the latchPin low so
-    // the LEDs don't change while you're sending in bits:
-    flashDigit(4);
-    sendRenderToShiftRegister(9);
+    displayInt(numToDisplay);
 }
 
 /*
@@ -106,5 +121,6 @@ void loop() {
   8 128
   9 144
 
-  An interesting note: any digit or figure which is entirely lit up except for one segment will fall on a... What the heck do you call it... A primary bit number? Something like 1, 2, 4, 8, 16 etc
+  An interesting note: any digit or figure which is entirely lit up except for one segment will fall on a... What do you call it... A primary bit number? Something like 1, 2, 4, 8, 16 etc
+  I now think this may be incorrect because reasons
 */
