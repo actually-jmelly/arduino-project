@@ -30,7 +30,7 @@ int errorInFiguresIndex = 2;
 
 // Do NOT set this int too high, even though there is an error code for it.
 // BEWARE BUFFER OVERFLOW
-int numToDisplay = 1234;
+int numToDisplay = 10000;
 
 void setup() {
   // Initialize our pins
@@ -60,24 +60,6 @@ void flashDigit(int digitToFlash){
   }
 }
 
-void dispayError(){
-  for(int i = 0; i < 4; i++){
-    flashDigit(i+1);
-    // Copied the guts of sendRenderToShiftRegister() to make sure this works.
-    // I can alter my functions to work with different arrays later
-    digitalWrite(latchPin, LOW);
-    shiftOut(dataPin, clockPin, MSBFIRST, 255);
-    digitalWrite(latchPin, HIGH);
-
-    digitalWrite(latchPin, LOW);
-    shiftOut(dataPin, clockPin, MSBFIRST, errorCode[i]);
-    digitalWrite(latchPin, HIGH);
-
-    shiftOut(dataPin, clockPin, MSBFIRST, 255);
-    digitalWrite(latchPin, LOW);
-  }
-}
-
 void sendRenderToShiftRegister(int arrayToDisplay, int numData){
     // I honestly don't know if we need the first and last shiftOut cycles
     // Also I feel like we're missing a digitalWrite in the last cycle but whatever it works
@@ -91,6 +73,15 @@ void sendRenderToShiftRegister(int arrayToDisplay, int numData){
 
     shiftOut(dataPin, clockPin, MSBFIRST, 255);
     digitalWrite(latchPin, LOW);
+}
+
+void dispayError(){
+  for(int i = 0; i < 4; i++){
+    flashDigit(i+1);
+    // Copied the guts of sendRenderToShiftRegister() to make sure this works.
+    // I can alter my functions to work with different arrays later
+    sendRenderToShiftRegister(errorInFiguresIndex, i);
+  }
 }
 
 void sendDecimalRenderToShiftRegister(int numData){
