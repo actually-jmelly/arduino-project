@@ -7,6 +7,13 @@ int digitPins[4] = {2, 3, 4, 5};
 
 int numbers[10] = {192, 249, 164, 176, 153, 146, 130, 248, 128, 144}; // This one is different from my previous numbers m-arrays. It's not in bits but in a 0-255 code.
 int numbersDecimal[10] = {64, 121, 36, 48, 25, 18, 2, 120, 0, 16};
+int errorCode[4] = {137, 193, 137, 193};
+
+// This int treats its last digit as a decimal value.
+// For example, 3564 = 356.4
+
+// Do NOT set this int too high, even though there is an error code for it.
+// BEWARE BUFFER OVERFLOW
 int numToDisplay = 1234;
 
 void setup() {
@@ -34,6 +41,24 @@ void flashDigit(int digitToFlash){
     } else {
       digitalWrite(digitPins[i], LOW);
     }
+  }
+}
+
+void dispayError(){
+  for(int i = 0; i < 4; i++){
+    flashDigit(i+1);
+    // Copied the guts of sendRenderToShiftRegister() to make sure this works.
+    // I can alter my functions to work with different arrays later
+    digitalWrite(latchPin, LOW);
+    shiftOut(dataPin, clockPin, MSBFIRST, 255);
+    digitalWrite(latchPin, HIGH);
+
+    digitalWrite(latchPin, LOW);
+    shiftOut(dataPin, clockPin, MSBFIRST, errorCode[i]);
+    digitalWrite(latchPin, HIGH);
+
+    shiftOut(dataPin, clockPin, MSBFIRST, 255);
+    digitalWrite(latchPin, LOW);
   }
 }
 
@@ -71,7 +96,7 @@ void sendDecimalRenderToShiftRegister(int numData){
 
 void displayInt(int integer){
   if (integer > 9999 or integer < 0){
-    // TODO Error code
+    dispayError();
   } else {
     int thousands = integer / 1000;
     int thousandsRemain = integer % 1000;
