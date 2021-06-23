@@ -1,9 +1,11 @@
 #include <Arduino.h>
 
+// Pin values
 int latchPin = 8;
 int clockPin = 12;
 int dataPin = 11;
 int digitPins[4] = {2, 3, 4, 5};
+int ldrPin = A0;
 
 // Make a multiplexed array that holds all our figure sets
 // That's a confusing sentence, right? I'll need to fix that
@@ -29,9 +31,13 @@ int errorInFiguresIndex = 2;
 // Do NOT set this int too high, even though there is an error code for it.
 // BEWARE BUFFER OVERFLOW
 int numToDisplay = 1234;
+// Hold the value of the light sensor
+int sensorValue = 0;
 
 void setup() {
   // Initialize our pins
+  // ldr seems like it doesn't need to be initialized.
+  // Probably because it's an analog pin.
   pinMode(latchPin, OUTPUT);
   pinMode(clockPin, OUTPUT);
   pinMode(dataPin, OUTPUT);
@@ -104,7 +110,9 @@ void displayInt(int integer){
 }
 
 void loop() {
-    displayInt(numToDisplay);
+  // Something tells me this is a bad idea
+  sensorValue = analogRead(ldrPin);
+  displayInt(sensorValue);
 }
 
 /*
