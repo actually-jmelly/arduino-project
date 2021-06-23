@@ -5,9 +5,25 @@ int clockPin = 12;
 int dataPin = 11;
 int digitPins[4] = {2, 3, 4, 5};
 
+// Leaving these ints here in case I need them again
 int numbers[10] = {192, 249, 164, 176, 153, 146, 130, 248, 128, 144}; // This one is different from my previous numbers m-arrays. It's not in bits but in a 0-255 code.
 int numbersDecimal[10] = {64, 121, 36, 48, 25, 18, 2, 120, 0, 16};
-int errorCode[4] = {137, 193, 137, 193};
+// I think I can just add 0s as the last 6 values to make this int work with my function
+// The old int is int errorCode[4] = {137, 193, 137, 193};
+int errorCode[10] = {137, 193, 137, 193, 0, 0, 0, 0, 0, 0};
+
+// Make a multiplexed array that holds all our figure sets
+// That's a confusing sentence, right? I'll need to fix that
+int figures[3][10] = {
+  {192, 249, 164, 176, 153, 146, 130, 248, 128, 144},
+  {64, 121, 36, 48, 25, 18, 2, 120, 0, 16},
+  {137, 193, 137, 193, 0, 0, 0, 0, 0, 0}
+};
+
+// Maybe just rename these to xIndex
+int numsInFiguresIndex = 0;
+int decimalNumsInFiguresIndex = 1;
+int errorInFiguresIndex = 2;
 
 // This int treats its last digit as a decimal value.
 // For example, 3564 = 356.4
@@ -62,7 +78,7 @@ void dispayError(){
   }
 }
 
-void sendRenderToShiftRegister(int numData){
+void sendRenderToShiftRegister(int arrayToDisplay, int numData){
     // I honestly don't know if we need the first and last shiftOut cycles
     // Also I feel like we're missing a digitalWrite in the last cycle but whatever it works
     digitalWrite(latchPin, LOW);
@@ -70,7 +86,7 @@ void sendRenderToShiftRegister(int numData){
     digitalWrite(latchPin, HIGH);
 
     digitalWrite(latchPin, LOW);
-    shiftOut(dataPin, clockPin, MSBFIRST, numbers[numData]);
+    shiftOut(dataPin, clockPin, MSBFIRST, figures[arrayToDisplay][numData]);
     digitalWrite(latchPin, HIGH);
 
     shiftOut(dataPin, clockPin, MSBFIRST, 255);
@@ -105,13 +121,13 @@ void displayInt(int integer){
     int tens = hundredsRemain / 10;
     int ones = hundredsRemain % 10;
     flashDigit(1);
-    sendRenderToShiftRegister(thousands);
+    sendRenderToShiftRegister(numsInFiguresIndex, thousands);
     flashDigit(2);
-    sendRenderToShiftRegister(hundreds);
+    sendRenderToShiftRegister(numsInFiguresIndex, hundreds);
     flashDigit(3);
-    sendDecimalRenderToShiftRegister(tens);
+    sendRenderToShiftRegister(decimalNumsInFiguresIndex, tens);
     flashDigit(4);
-    sendRenderToShiftRegister(ones);
+    sendRenderToShiftRegister(numsInFiguresIndex, ones);
   }
 }
 
