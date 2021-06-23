@@ -8,10 +8,15 @@ int digitPins[4] = {2, 3, 4, 5};
 // Make a multiplexed array that holds all our figure sets
 // That's a confusing sentence, right? I'll need to fix that
 int figures[3][10] = {
-  {192, 249, 164, 176, 153, 146, 130, 248, 128, 144},
-  {64, 121, 36, 48, 25, 18, 2, 120, 0, 16},
-  {137, 193, 137, 193, 0, 0, 0, 0, 0, 0}
+  {192, 249, 164, 176, 153, 146, 130, 248, 128, 144}, // Numbers
+  {64, 121, 36, 48, 25, 18, 2, 120, 0, 16}, // Numbers with a decimal point
+  {137, 193, 137, 193, 0, 0, 0, 0, 0, 0} // An error code: 'HUHU'
 };
+// If I posted this to GitHub
+// And you know where 'HUHU' comes from
+// Please, please tell me
+// It was in diagrams for 4 digit 7 segment displays
+// And I'd love to know what it means
 
 // Maybe just rename these to xIndex
 int numsInFiguresIndex = 0;
