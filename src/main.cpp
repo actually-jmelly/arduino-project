@@ -5,13 +5,6 @@ int clockPin = 12;
 int dataPin = 11;
 int digitPins[4] = {2, 3, 4, 5};
 
-// Leaving these ints here in case I need them again
-int numbers[10] = {192, 249, 164, 176, 153, 146, 130, 248, 128, 144}; // This one is different from my previous numbers m-arrays. It's not in bits but in a 0-255 code.
-int numbersDecimal[10] = {64, 121, 36, 48, 25, 18, 2, 120, 0, 16};
-// I think I can just add 0s as the last 6 values to make this int work with my function
-// The old int is int errorCode[4] = {137, 193, 137, 193};
-int errorCode[10] = {137, 193, 137, 193, 0, 0, 0, 0, 0, 0};
-
 // Make a multiplexed array that holds all our figure sets
 // That's a confusing sentence, right? I'll need to fix that
 int figures[3][10] = {
@@ -30,7 +23,7 @@ int errorInFiguresIndex = 2;
 
 // Do NOT set this int too high, even though there is an error code for it.
 // BEWARE BUFFER OVERFLOW
-int numToDisplay = 10000;
+int numToDisplay = 1234;
 
 void setup() {
   // Initialize our pins
@@ -82,23 +75,6 @@ void dispayError(){
     // I can alter my functions to work with different arrays later
     sendRenderToShiftRegister(errorInFiguresIndex, i);
   }
-}
-
-void sendDecimalRenderToShiftRegister(int numData){
-  // TODO fix the abomination that is this function's name
-
-  // I honestly don't know if we need the first and last shiftOut cycles
-    // Also I feel like we're missing a digitalWrite in the last cycle but whatever it works
-    digitalWrite(latchPin, LOW);
-    shiftOut(dataPin, clockPin, MSBFIRST, 255);
-    digitalWrite(latchPin, HIGH);
-
-    digitalWrite(latchPin, LOW);
-    shiftOut(dataPin, clockPin, MSBFIRST, numbersDecimal[numData]);
-    digitalWrite(latchPin, HIGH);
-
-    shiftOut(dataPin, clockPin, MSBFIRST, 255);
-    digitalWrite(latchPin, LOW);
 }
 
 void displayInt(int integer){
