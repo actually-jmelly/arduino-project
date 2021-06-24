@@ -30,9 +30,16 @@ int errorInFiguresIndex = 2;
 
 // Do NOT set this int too high, even though there is an error code for it.
 // BEWARE BUFFER OVERFLOW
+// Also now that this is on GitHub I should mention this int does nothing right now.
+// It's mostly for me to test stuff with
 int numToDisplay = 1234;
 // Hold the value of the light sensor
 int sensorValue = 0;
+
+// Holds the timestamp from when the dispay was last updated
+unsigned long previousMillis = 0;
+// How long to wait to update the dispay in milliseconds
+const long interval = 500;
 
 void setup() {
   // Initialize our pins
@@ -110,8 +117,16 @@ void displayInt(int integer){
 }
 
 void loop() {
-  // Something tells me this is a bad idea
-  sensorValue = analogRead(ldrPin);
+  // Ask the Arduino how many milliseconds it's been awake and store the result
+  unsigned long currentMillis = millis();
+
+  // If 1000 milliseconds have passed, update the last timestamp and refresh the value for the display
+  // I feel like I worded that weird so let me know if I should change it
+  if(currentMillis - previousMillis >= interval){
+    previousMillis = currentMillis;
+    sensorValue = analogRead(ldrPin);
+  }
+  // Run the 4 digit 7 segment display
   displayInt(sensorValue);
 }
 
